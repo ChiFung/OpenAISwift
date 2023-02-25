@@ -70,6 +70,33 @@ extension OpenAISwift {
         }
     }
     
+    /// Send a Image generations request to the OpenAI API
+    /// - Parameters:
+    ///   - prompt: A text description of the desired image(s). The maximum length is 1000 characters.
+    ///   - number: The number of images to generate. Must be between 1 and 10.
+    ///   - size: The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024.
+    ///   - completionHandler: Returns an OpenAI Data Model
+    public func sendImageGenerations(with prompt: String, number: Int = 1, size: String = "512x512", completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
+        let endpoint = Endpoint.image(type: .generations)
+        let body = ImageCommand(prompt: prompt, number: number, size: size)
+        let request = prepareRequest(endpoint, body: body)
+        
+        makeRequest(request: request) { result in
+            switch result {
+            case .success(let success):
+                do {
+                    let res = try JSONDecoder().decode(OpenAI.self, from: success)
+                    completionHandler(.success(res))
+                } catch {
+                    completionHandler(.failure(.decodingError(error: error)))
+                }
+            case .failure(let failure):
+                completionHandler(.failure(.genericError(error: failure)))
+            }
+        }
+    
+    }
+    
     private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
         let session = URLSession.shared
         let task = session.dataTask(with: request) { (data, response, error) in
