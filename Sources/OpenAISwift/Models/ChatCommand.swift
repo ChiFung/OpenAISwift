@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ChatMessage: Encodable {
+public struct ChatMessage: Codable {
     let role: String
     let content: String
     
