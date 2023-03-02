@@ -8,8 +8,8 @@
 import Foundation
 
 public struct ChatMessage: Codable {
-    let role: String
-    let content: String
+    public let role: String
+    public let content: String
     
     public init(role: String, content: String)  {
         self.role = role
