@@ -10,6 +10,11 @@ import Foundation
 public struct ChatMessage: Encodable {
     let role: String
     let content: String
+    
+    public init(role: String, content: String)  {
+        self.role = role
+        self.content = content
+    }
 }
 
 struct ChatCommand: Encodable {
