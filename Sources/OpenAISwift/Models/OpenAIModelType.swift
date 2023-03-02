@@ -50,6 +50,9 @@ public enum OpenAIModelType {
         ///
         /// > Model Name: text-ada-001
         case ada = "text-ada-001"
+        
+        /// > Model Name: gpt-3.5-turbo
+        case turbo = "gpt-3.5-turbo"
     }
     
     /// A set of models that can understand and generate code, including translating natural language to code

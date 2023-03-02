@@ -44,6 +44,32 @@ extension OpenAISwift {
         }
     }
     
+    /// Send a Chat Completion to the OpenAI API
+    /// - Parameters:
+    ///   - messagge: The Chat messageg
+    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.turbo)` by default which is the most capable model
+    ///   - maxTokens: The limit character for the returned response, defaults to 16 as per the API
+    ///   - completionHandler: Returns an OpenAI Data Model
+    public func sendChat(with messages:[ChatMessage], model: OpenAIModelType = .gpt3(.turbo), maxTokens: Int = 16, temperature: Double = 1, completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
+        let endpoint = Endpoint.completions
+        let body = ChatCommand(messages: messages, model: model.modelName, maxTokens: maxTokens, temperature: temperature)
+        let request = prepareRequest(endpoint, body: body)
+        
+        makeRequest(request: request) { result in
+            switch result {
+            case .success(let success):
+                do {
+                    let res = try JSONDecoder().decode(OpenAI.self, from: success)
+                    completionHandler(.success(res))
+                } catch {
+                    completionHandler(.failure(.decodingError(error: error)))
+                }
+            case .failure(let failure):
+                completionHandler(.failure(.genericError(error: failure)))
+            }
+        }
+    }
+    
     /// Send a Edit request to the OpenAI API
     /// - Parameters:
     ///   - instruction: The Instruction For Example: "Fix the spelling mistake"
